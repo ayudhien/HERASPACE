@@ -1,124 +1,39 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="utf-8">
-        <title>Basic tile map</title>
-        <link rel="stylesheet" href="leaflet/leaflet.css" />
-        <link rel="stylesheet" href="leaflet/plugins/Leaflet.draw/leaflet.draw.css" />
+<head>
+    <meta charset="utf-8">
+    <title>Basic tile map</title>
+    <link rel="stylesheet" href="https://ramani.ujuizi.com/api/v.0.2/ramani.min.css" />
+    
+   
+    <script src="https://ramani.ujuizi.com/api/v.0.2/ramani.min.js"></script>
+    <style>
+    #map { position:absolute; top:0; bottom:0; width:100%; }
 
-        <script src="http://code.jquery.com/jquery-1.11.3.min.js"></script>
-        <script src="leaflet/leaflet.js"></script>
-        <script src="leaflet/plugins/Leaflet.draw/leaflet.draw.js"></script>
-        <script src="http://ramani.ujuizi.com/api/v.0.1/ramani.min.js"></script>
+</style>
+</head>
+<body>
+    <input type="text" id="search">
+<div style="width: 100%;height: 500px;" id="map"></div>
+</body>
+<script>
+    
+    var rc = new RamaniAPI();
+    rc.init({
+        username:'isaacdura',
+        apiKey:'fa46549a657ef2c2499caa637d99285f',
+        package:'ddl.dataset-topaz4-bio-nat-myoceanv2-be.chla'
+    });
+    var map = rc.map({
+        center : new L.LatLng(41.3768, 2.3291),
+        zoom : 10,
+        baselayer : 'osm'
+    });
+    
+    var params1 = { db: "isaacdura", layer: 'ddl.GLOBALTRUECOLOR', opacity:1 };
+    var params2 = { db: "isaacdura", layer: 'ddl.datasettopaz4bionatmyoceanv2be.chla'};
 
-    </head>
-    <body>
-        <input type="text" id="search">
-        <div style="width: 800px;height: 500px; position: relative" id="map"></div>
-    </body>
-    <script>
-
-        var rc = new RamaniAPI();
-        rc.init({username: 'isaacdura', apiKey: 'fa46549a657ef2c2499caa637d99285f', package: 'ddl.dataset-topaz4-bio-nat-myoceanv2-be.chla'});
-        var map = rc.map({
-            center: new L.LatLng(49.27497287599639, 2.867431640625),
-            baselayer: 'osm'
-        });
-
-        var drawnItems = new L.FeatureGroup();
-
-        map.addLayer(drawnItems);
-
-        var drawControl = new L.Control.Draw({
-            edit: {
-                featureGroup: drawnItems
-            }
-        });
-
-
-        map.addControl(drawControl);
-
-
-        var params1 = {db: "isaacdura", layer: 'ddl.GLOBALTRUECOLOR', opacity: 1};
-        var params2 = {db: "isaacdura", layer: 'ddl.simS3seriesCoverGlobal.coverclass'};
-        rc.mapsSwipe(params1, params2);
-
-
-        /*    var var_layer1 = {db: "isaacdura", layer: 'ddl.dataset-topaz4-bio-nat-myoceanv2-be.chla', opacity: 1};
-         var var_layer2 = {db: "isaacdura", layer: 'ddl.dataset-topaz4-bio-nat-myoceanv2-be.chla'};
-         
-         rc.mapsSwipe(var_layer1, var_layer2);*/
-
-
-
-        map.on('draw:created', function (e) {
-            var type = e.layerType,
-                    overlay = e.layer;
-            var bbox;
-
-            if (type != 'circle' && type != 'marker' && type != 'polyline') {
-                var langs = overlay.getLatLngs();
-                var fields = {
-                    id: '1',
-                    name: 'asdasd'
-                };
-                var transect = rc.storePolygon('public.store_polygon', fields, langs);
-            } else if (type == 'polyline') {
-                var langs = overlay.getLatLngs();
-
-                // var transect = rc.getTransect(langs, {
-                //   layer: 'ddl.simS5seriesForAirQualityEuro.o3conc',
-                //   info_format : 'image/png'
-                // });
-                var fields = {
-                    id: '1',
-                    name: 'asdasd'
-                };
-                var transect = rc.storeLine('public.store_polyline', fields, langs);
-                //console.log(transect);
-                //$('body').append('<img src="data:image/png;base64,' + transect + '" />');
-                overlay.on('click', function () {
-                    //getTransect(layer, linestring);
-                });
-            } else if (type === 'marker') {
-                var info = rc.getPoint(overlay.getLatLng(), {
-                    layer: 'ddl.simS5seriesForAirQualityEuro.o3conc'
-                });
-                console.log(info);
-
-                // var info = rc.getVerticleProfile(overlay.getLatLng(), {
-                //    layer: 'ddl.simS5seriesForAirQualityEuro.o3conc',
-                //    info_format : 'image/png',
-                //    imgobj : 'imgobj'
-                // }); 
-
-                // // $('body').append('<img id="imgobj" src="' + info + '" />');
-                // var fields = {
-                //    id : '1',
-                //    name : 'asdasd'
-                // };
-                // rc.storePoint('public.store_point', fields, overlay.getLatLng());
-            }
-            drawnItems.addLayer(overlay);
-        });
-
-        $('#search').on('blur', function (e) {
-            var key = $(this).val();
-            rc.search('public.geoserver_getfeature', key, true);
-        });
-
-        rc.getTile({
-            db: "ramanicloud",
-            layer: 'public.geoserver_getfeature'
-        });
-
-        // rc.setParams({
-        //   item:'dates',
-        //   format : 'rss'
-        // });
-
-        // var metadata = rc.getMetadata('ddl.simS5seriesForAirQualityEuro.o3conc');
-        // console.log(metadata);
-
-    </script>
+    rc.mapsSwipe(params1, params2);
+        
+</script>
 </html>
